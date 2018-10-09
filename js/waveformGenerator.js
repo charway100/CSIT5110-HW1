@@ -60,11 +60,25 @@ var WaveformGenerator = {
                 for(var i = 0; i < totalSamples; ++i) {
                     var currentTime = i / sampleRate;
                     var sampleValue = 0;
-
                     // TODO: Complete the FM waveform generator
                     // Hint: You can use the function lerp() in utility.js 
                     //       for performing linear interpolation
-                    modulationValue = modulationAmplitude * Math.sin(2.0 * Math.PI * modulationFrequency * currentTime);
+                    var ADSRVal = 1;
+                    if (useADSR) {
+                        if (i<attackDuration) {
+                            ADSRVal = lerp(0,1,i/(attackDuration-1));
+                        }
+                        else if (attackDuration<=i && i<attackDuration+decayDuration) {
+                            ADSRVal = lerp(1,sustainLevel,(i-attackDuration)/(decayDuration-1));
+                        } 
+                        else if (decayDuration<=i && i<totalSamples-releaseDuration) {
+                            ADSRVal = sustainLevel;
+                        } else {
+                            ADSRVal = lerp(sustainLevel,0,(i-(totalSamples-releaseDuration))/(releaseDuration-1));
+                        }
+                    }
+
+                    modulationValue = ADSRVal * modulationAmplitude * Math.sin(2.0 * Math.PI * modulationFrequency * currentTime);
                     sampleValue = carrierAmplitude * Math.sin(2.0 * Math.PI * carrierFrequency * currentTime + modulationValue);
                     result.push(sampleValue);
                 }
