@@ -22,13 +22,20 @@ var WaveformGenerator = {
                 * TODO: Complete this function
                 **/
 
-                var harmonics = [];
+                var harmonics = [1,0.75,0.5,0.14,0.5,0.12,0.17];
                 for (var i = 0; i < totalSamples; ++i) {
                     var currentTime = i / sampleRate;
                     var sampleValue = 0;
 
                     // TODO: Super-positioning the harmonic sine waves, until the nyquist frequency is reached
-
+                    for (var j = 0; j < harmonics.length; ++j) {
+                        if ((2*j+1)*frequency >= nyquistFrequency) 
+                            {
+                                console.log("nyquistFrequency reached")
+                                break;
+                            }
+                        sampleValue += harmonics[j] * Math.sin(2.0 * Math.PI * (2*j+1) * frequency * currentTime);
+                    }
                     result.push(amp * sampleValue);
                 }
                 break;
@@ -57,8 +64,9 @@ var WaveformGenerator = {
                     // TODO: Complete the FM waveform generator
                     // Hint: You can use the function lerp() in utility.js 
                     //       for performing linear interpolation
-
-                    result.push(amp * sampleValue);
+                    modulationValue = modulationAmplitude * Math.sin(2.0 * Math.PI * modulationFrequency * currentTime);
+                    sampleValue = carrierAmplitude * Math.sin(2.0 * Math.PI * carrierFrequency * currentTime + modulationValue);
+                    result.push(sampleValue);
                 }
                 break;
             case "karplus-strong": // Karplus-Strong algorithm
