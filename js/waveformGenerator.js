@@ -104,6 +104,13 @@ var WaveformGenerator = {
                     // Note that the sound buffer already contains the initial
                     // energy. You do not need to push new samples in the
                     // result array as the result array has been filled already
+                    var t = Math.random();
+                    if (t<=b) {
+                        result[i] = 0.5 * (result[i-delay]+result[i-delay-1]);
+                    }
+                    else {
+                        result[i] = -0.5 * (result[i-delay]+result[i-delay-1]);
+                    }
 
                 }
                 break;
