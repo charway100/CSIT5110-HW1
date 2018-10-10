@@ -20,12 +20,20 @@ PitchShift = {
             // the required samples from originalAudioSequences
             // to pitchShiftedAudioSequences
 
+            var step = 1 - 1/Math.pow(2,pitchShift/12);
+
             for(var c = 0; c < channels.length; ++c) {
+                var count = 0;
                 for(var i = 0; i < originalAudioSequences[c].data.length; ++i) {
 
                     // TODO: Not all samples are needed
-
-                    pitchShiftedAudioSequences[c].data.push(originalAudioSequences[c].data[i]);
+                    count += step;
+                    if (count < 1) {
+                        pitchShiftedAudioSequences[c].data.push(originalAudioSequences[c].data[i]);
+                    }
+                    else {
+                        count-=1;
+                    }
                 }
             }
 
@@ -36,12 +44,19 @@ PitchShift = {
             // the required samples from originalAudioSequences
             // to pitchShiftedAudioSequences
 
+            var step = Math.pow(2,-pitchShift/12) - 1;
+
             for(var c = 0; c < channels.length; ++c) {
+                var count = 0;
                 for(var i = 0; i < originalAudioSequences[c].data.length; ++i) {
 
                     // TODO: Some samples may need to be duplicated
-                    
                     pitchShiftedAudioSequences[c].data.push(originalAudioSequences[c].data[i]);
+                    count += step;
+                    while (count > 0) {
+                        pitchShiftedAudioSequences[c].data.push(originalAudioSequences[c].data[i]);
+                        count -= 1;
+                    }
                 }
             }
 
