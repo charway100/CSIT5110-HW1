@@ -46,7 +46,8 @@ Postprocessor = {
                 // Obtain all the required parameters
                 var tremoloFrequency = parseFloat($("#tremolo-frequency").data("p" + pass));
                 var wetness = parseFloat($("#tremolo-wetness").data("p" + pass));
-
+                var tremoloMultiplier = 
+                WaveformGenerator.generateWaveform("sine-time",tremoloFrequency,wetness/2,duration)
                 // Post-process every channels
                 for(var c = 0; c < channels.length; ++c) {
                     // Get the sample data of the channel
@@ -55,6 +56,7 @@ Postprocessor = {
                     // For every sample, apply a tremolo multiplier
                     for(var i = 0; i < audioSequence.data.length; ++i) {
                         // TODO: Complete the tremolo postprocessor
+                        audioSequence.data[i] *= (tremoloMultiplier[i]+1-wetness/2);
                     }
 
                     // Update the sample data with the post-processed data
@@ -81,6 +83,19 @@ Postprocessor = {
                         // TODO: Complete the ADSR postprocessor
                         // Hinst: You can use the function lerp() in utility.js
                         // for performing linear interpolation
+                        var ADSRVal = 1;
+                        if (i<attackDuration) {
+                            ADSRVal = lerp(0,1,i/(attackDuration-1));
+                        }
+                        else if (attackDuration<=i && i<attackDuration+decayDuration) {
+                            ADSRVal = lerp(1,sustainLevel,(i-attackDuration)/(decayDuration-1));
+                        } 
+                        else if (decayDuration<=i && i<audioSequence.data.length-releaseDuration) {
+                            ADSRVal = sustainLevel;
+                        } else {
+                            ADSRVal = lerp(sustainLevel,0,(i-(audioSequence.data.length-releaseDuration))/(releaseDuration-1));
+                        }
+                        audioSequence.data[i] *= ADSRVal;
                         
                     }
 
